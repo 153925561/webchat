@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须定义，非绑定到类或是接口的方式 -->
+<mapper namespace="org.cdlg.sunrise.dao.MessageDao">
+
+<!-- 添加信息， 默认状态是未读， 时间是当前时间  -->
+ <insert  id="addMessage"  parameterType="org.cdlg.sunrise.entity.Message">
+ 
+  insert into message(fromid,toid,type,time,content,status) values (#{fromid},#{toid},#{type},now(),#{content},0)
+  
+ </insert>
+  
+<!-- 读取验证信息 -->
+ <select id="readMessage"  parameterType="org.cdlg.sunrise.entity.Message" resultType="org.cdlg.sunrise.entity.Message">
+ 
+   select * from message where 1=1
+  <if test="fromid!='' and fromid!=null">
+   and fromid=#{fromid}
+   </if>
+  <if test="toid!='' and toid!=null">
+   and toid=#{toid}
+   </if>
+  <if test="type!='' and type!=null">
+   and type=#{type}
+  </if>
+   and status=0
+  order by time desc
+  
+  </select> 
+  
+  
+  <!-- 获取未读消息数量 -->
+  <select id="FindMessageCount" parameterType="org.cdlg.sunrise.entity.Message" resultType="int">
+  
+   select count(1) ts from message where
+   fromid=#{fromid} 
+   and toid=#{toid}
+   and type=0
+   and status=0
+   order by id desc
+  </select>
+  
+  
+  
+  
+<!-- 处理验证信息   更新消息状态-->
+  
+  <update id="UpdateMessageStatus" parameterType="org.cdlg.sunrise.entity.Message" >
+  
+   update message set status=1 where
+   fromid=#{fromid} 
+   and toid=#{toid}
+   and type=#{type}
+   
+  </update>
+  
+  
+  <!-- 读取聊天内容 -->
+  
+  <select id="ReadChatMessage" parameterType="org.cdlg.sunrise.entity.Message" resultType="org.cdlg.sunrise.entity.Message" >
+  
+  	 select * from message where
+    (fromid=#{toid} and toid=#{fromid} or fromid=#{fromid} and toid=#{toid}) 
+  	 and type=0
+ 	 order by id desc
+  
+  </select>
+  
+  
+  
+  
+  </mapper>

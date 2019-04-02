@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须定义，非绑定到类或是接口的方式 -->
+<mapper namespace="org.cdlg.sunrise.dao.ReplyDao">
+
+<select id="findReplyById" resultType="org.cdlg.sunrise.entity.Reply" parameterType="int">
+
+  select * from  reply where sid=#{sid}
+
+</select>
+
+</mapper>

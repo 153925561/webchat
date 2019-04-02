@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须定义，非绑定到类或是接口的方式 -->
+<mapper namespace="org.cdlg.sunrise.dao.UserDao">
+
+<!-- 查询所用用户信息 -->
+  <select id="findAll" resultType="org.cdlg.sunrise.entity.User">
+     select * from chatuser
+  </select>
+  
+ <!-- 添加用户 -->
+  <insert  id="addUser"  parameterType="org.cdlg.sunrise.entity.User">
+  
+ 	 insert into chatuser(userid,password) values (#{userid},#{password})
+ 	 
+  </insert>
+  
+ <!-- 匹配用户登录信息 -->
+  <select id="findUserByUsernameAndPassword" resultType="org.cdlg.sunrise.entity.User" parameterType="map">
+    
+     select * from chatuser where userid=#{username} and password=#{password}
+     
+  </select>
+  
+ <!--查询用户个人信息 -->
+    <select id="findOneUser" resultType="org.cdlg.sunrise.entity.User" parameterType="string">
+  
+     select * from chatuser where userid=#{userid} 
+  
+  </select>
+  
+<!--查询用户好友列表 -->
+    <select id="FindMyFriend" resultType="org.cdlg.sunrise.entity.User" parameterType="int">
+  
+     select * from chatuser where  id  in (select friendid from friend  where mineid =${mineid})
+  
+  </select>   
+ 
+<!--根据主键查询好友个人信息 -->
+    <select id="findfriend" resultType="org.cdlg.sunrise.entity.User" parameterType="int">
+  
+     select * from chatuser where id=#{friendid}
+     
+    </select>
+    
+  <!--根据主键查询头像 -->
+  
+    <select id="findhead" resultType="string" parameterType="int">
+  
+     select profilehead from chatuser where id=#{id}
+     
+    </select>
+  
+  
+  
+  
+  <!-- 更新用户个人信息 -->
+  <update id="UpdateMessage"  parameterType="org.cdlg.sunrise.entity.User">
+  
+     update chatuser set nickname=#{nickname},age=#{age},profile=#{profile}  where userid=#{userid}
+  
+  </update>
+  
+<!-- 更新用户头像 -->
+   <update id="UpdateHead"  parameterType="org.cdlg.sunrise.entity.User">
+  
+     update chatuser set profilehead=#{profilehead}  where userid=#{userid}
+  
+    </update>
+  
+<!-- 修改密码 -->
+  <update id="UpdatePassword"  parameterType="org.cdlg.sunrise.entity.User">
+  
+     update chatuser set password=#{password}  where userid=#{userid}
+  
+  </update>
+  
+<!-- 分页查询允许添加的好友列表 -->
+  <select id="FindFriend" resultType="org.cdlg.sunrise.entity.User" parameterType="map">
+  
+  	select * from chatuser where
+ 	 userid!='${userid}' and
+ 	 checktype!=3 and
+ 	 id not in (select friendid from friend  where mineid =${mineid})
+  	<if test="searchid!='' and searchid!=null">
+  	and userid='${searchid}'
+  	</if>
+ 	 <if test="searchnickname!='' and searchnickname!=null">
+ 	 and nickname like '%${searchnickname}%'
+  	</if>
+  	order by id
+ 	 limit ${startindex},3
+ 
+  </select>
+  
+<!-- 查询允许添加的好友列表 -->
+  <select id="FindFriends" resultType="org.cdlg.sunrise.entity.User" parameterType="map">
+  
+	  select * from chatuser where
+	  userid!='${userid}' and
+	  checktype!=3 and
+	  id not in (select friendid from friend  where mineid =${mineid})
+	  <if test="searchid!='' and searchid!=null">
+	  and userid='${searchid}'
+	  </if>
+	  <if test="searchnickname!='' and searchnickname!=null">
+	  and nickname like '%${searchnickname}%'
+	  </if>
+	  
+  </select>
+  
+<!-- 添加好友-->
+  <insert  id="AddFriend"  parameterType="int">
+  
+  insert into friend(friendid,mineid) values (#{friendid},#{mineid})
+  
+  </insert>
+  
+<!--根据主键查询好友个人信息 -->
+    <select id="findOneUserById" resultType="org.cdlg.sunrise.entity.User" parameterType="int">
+  
+     select * from chatuser where id=#{friendid}
+     
+    </select> 
+
+ <!-- 删除好友 -->
+  
+  <delete id="deleteFriend" parameterType="int">
+  
+   delete from friend WHERE (friendid=#{friendid} and mineid=#{userid}) or (friendid=#{userid} and mineid=#{friendid})
+  
+  </delete>
+  
+  
+</mapper>
+

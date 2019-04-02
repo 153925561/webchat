@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace必须定义，非绑定到类或是接口的方式 -->
+<mapper namespace="org.cdlg.sunrise.dao.SpaceDao">
+
+<!-- 添加个人空间信息 -->
+<insert id="addSpace" parameterType="org.cdlg.sunrise.entity.Space">
+
+ insert into space (userid,nickname,content,pics,creatdate,replynum)
+ values(#{userid},#{nickname},#{content},#{pics},now(),0)
+
+</insert>
+
+<!-- 读取个人空间动态 -->
+<select id="readSpace" parameterType="int" resultType="org.cdlg.sunrise.entity.Space">
+
+   select * from space where userid=#{userid}
+
+</select>
+ 
+<!-- 读取好友空间动态 -->
+<select id="readFriendSpace" parameterType="int" resultType="org.cdlg.sunrise.entity.Space">
+
+   select * from space where userid in (select friendid from friend  where mineid =#{userid})
+
+</select>
+
+
+</mapper>
